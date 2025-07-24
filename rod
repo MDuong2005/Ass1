@@ -1,0 +1,69 @@
+import java.util.List;
+import java.util.Scanner;
+
+public class Rod extends Item {
+    private double length;
+
+    public Rod() {}
+
+    public Rod(String id, String name, String category, String material,
+               double inPrice, double price, double length,
+               List<String> factories, int year, List<String> awards,
+               List<String> images, String desc) {
+        super(id, name, category, material, inPrice, price, factories, year, awards, images, desc);
+        this.length = length;
+    }
+
+    @Override
+    public void input(Scanner sc, ItemList list) {
+        do {
+            System.out.print("Nhập mã cần câu: ");
+            id = sc.nextLine();
+            if (list.isDuplicateId(id)) {
+                System.out.println("❌ Mã đã tồn tại. Nhập lại.");
+            } else break;
+        } while (true);
+
+        System.out.print("Tên: ");
+        name = sc.nextLine();
+        System.out.print("Thể loại: ");
+        category = sc.nextLine();
+        System.out.print("Chất liệu: ");
+        material = sc.nextLine();
+        System.out.print("Giá nhập: ");
+        inPrice = Double.parseDouble(sc.nextLine());
+        System.out.print("Giá bán: ");
+        price = Double.parseDouble(sc.nextLine());
+        System.out.print("Chiều dài (m): ");
+        length = Double.parseDouble(sc.nextLine());
+        System.out.print("Năm phát hành: ");
+        yearOfRelease = Integer.parseInt(sc.nextLine());
+        System.out.print("Mô tả: ");
+        desc = sc.nextLine();
+
+        authorIds = inputList(sc, "Nhà máy");
+        awards = inputList(sc, "Giải thưởng");
+        images = inputList(sc, "Link ảnh");
+    }
+
+    @Override
+    public void output() {
+        System.out.println("==== CẦN CÂU ====");
+        System.out.println("Mã: " + id);
+        System.out.println("Tên: " + name);
+        System.out.println("Thể loại: " + category);
+        System.out.println("Chất liệu: " + material);
+        System.out.println("Giá nhập: " + inPrice);
+        System.out.println("Giá bán: " + price);
+        System.out.println("Chiều dài: " + length + "m");
+        System.out.println("Năm phát hành: " + yearOfRelease);
+        System.out.println("Nhà máy: " + authorIds);
+        System.out.println("Giải thưởng: " + awards);
+        System.out.println("Ảnh: " + images);
+        System.out.println("Mô tả: " + desc);
+    }
+
+    public double getLength() {
+        return length;
+    }
+}
