@@ -1,0 +1,206 @@
+import java.io.*;
+import java.util.*;
+
+public class ItemList extends ArrayList<Item> {
+
+    private static final Random rand = new Random();
+
+    public ItemList() {
+        for (int i = 1; i <= 25; i++) add(generateRandomTeaPot(i));
+        for (int i = 1; i <= 25; i++) add(generateRandomRod(i));
+    }
+
+    public boolean isDuplicateId(String id) {
+        for (Item item : this) {
+            if (item.getId().equalsIgnoreCase(id)) return true;
+        }
+        return false;
+    }
+
+    public void addItem(Item item, Scanner sc) {
+        item.input(sc, this);
+        this.add(item);
+        System.out.println("✅ Thêm thành công.");
+    }
+
+    public void sortItemsByPrice() {
+        Collections.sort(this, new Comparator<Item>() {
+            public int compare(Item a, Item b) {
+                return Double.compare(b.getPrice(), a.getPrice());
+            }
+        });
+    }
+
+    public void sortItemsByName() {
+        Collections.sort(this, new Comparator<Item>() {
+            public int compare(Item a, Item b) {
+                return a.getName().compareToIgnoreCase(b.getName());
+            }
+        });
+    }
+
+    public void displayTable() {
+        System.out.printf("%-6s| %-20s| %-13s| %-10s| %-10s| %-10s| %-5s| %-15s| %-15s| %-25s| %-20s\n",
+                "Mã", "Tên", "Thể loại", "Chất liệu", "Giá nhập", "Giá bán", "Năm", "Dung tích(ml)", "Chiều dài(m)", "Tác giả/NM", "Mô tả");
+
+        char[] line = new char[170];
+        Arrays.fill(line, '=');
+        System.out.println(new String(line));
+
+        for (Item i : this) {
+            String volume = (i instanceof TeaPot) ? String.format("%.1f", ((TeaPot) i).getVolume()) : "";
+            String length = (i instanceof Rod) ? String.format("%.1f", ((Rod) i).getLength()) : "";
+            String authors = i.getAuthorIds() != null ? i.getAuthorIds().toString() : "";
+            String desc = i.getDesc() != null ? i.getDesc() : "";
+
+            System.out.printf("%-6s| %-20s| %-13s| %-10s| %-10.1f| %-10.1f| %-5d| %-15s| %-15s| %-25s| %-20s\n",
+                    i.getId(), i.getName(), i.getCategory(), i.getMaterial(), i.getInPrice(),
+                    i.getPrice(), i.getYearOfRelease(), volume, length, authors, desc);
+        }
+    }
+
+    public void updateItemById(String id, Scanner sc) {
+        for (Item item : this) {
+            if (item.getId().equalsIgnoreCase(id)) {
+                System.out.println("🔄 Cập nhật sản phẩm:");
+                item.input(sc, this);
+                System.out.println("✅ Cập nhật thành công.");
+                return;
+            }
+        }
+        System.out.println("❌ Không tìm thấy sản phẩm với mã: " + id);
+    }
+
+    public void saveDataToFile(String filename) {
+        try {
+            ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filename));
+            oos.writeObject(this);
+            oos.close();
+            System.out.println("✅ Ghi file thành công.");
+        } catch (Exception e) {
+            System.out.println("❌ Lỗi khi ghi file: " + e.getMessage());
+        }
+    }
+
+    public void loadDataFromFile(String filename) {
+        try {
+            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(filename));
+            ItemList data = (ItemList) ois.readObject();
+            this.clear();
+            this.addAll(data);
+            ois.close();
+            System.out.println("✅ Đọc file thành công.");
+        } catch (Exception e) {
+            System.out.println("❌ Lỗi khi đọc file: " + e.getMessage());
+        }
+    }
+
+    public void searchTeaPotByVolume(double targetVolume) {
+        boolean found = false;
+        for (Item item : this) {
+            if (item instanceof TeaPot) {
+                TeaPot tp = (TeaPot) item;
+                if (tp.getVolume() == targetVolume) {
+                    tp.output();
+                    found = true;
+                }
+            }
+        }
+        if (!found) {
+            System.out.println("❌ Không tìm thấy ấm trà có thể tích: " + targetVolume + "ml");
+        }
+    }
+
+    public void searchRodByLength(double targetLength) {
+        boolean found = false;
+        for (Item item : this) {
+            if (item instanceof Rod) {
+                Rod rod = (Rod) item;
+                if (rod.getLength() == targetLength) {
+                    rod.output();
+                    found = true;
+                }
+            }
+        }
+        if (!found) {
+            System.out.println("❌ Không tìm thấy cần câu có chiều dài: " + targetLength + "m");
+        }
+    }
+
+    public void searchByAuthor(String name) {
+        boolean found = false;
+        for (Item i : this) {
+            for (String author : i.getAuthorIds()) {
+                if (author.toLowerCase().contains(name.toLowerCase())) {
+                    i.output();
+                    found = true;
+                    break;
+                }
+            }
+        }
+        if (!found) {
+            System.out.println("❌ Không tìm thấy sản phẩm của tác giả hoặc nhà máy: " + name);
+        }
+    }
+
+    // ======= Random Data Generation =======
+    private TeaPot generateRandomTeaPot(int i) {
+        String[] names = {"Tây Thi", "Thạch Biều", "Trúc Đoạn", "Lục Biên", "Song Tiện"};
+        String[] materials = {"Tử sa", "Hắc sa", "Chu sa"};
+        String name = names[rand.nextInt(names.length)];
+        String material = materials[rand.nextInt(materials.length)];
+        String desc = "Ấm trà thủ công cao cấp.";
+        double volume = randDouble(200, 500);
+
+        return new TeaPot("T" + i, name, "Ấm trà", material,
+                randDouble(100, 300), randDouble(500, 1500),
+                generateRandomAuthors(), randInt(2018, 2024),
+                generateRandomAwards(), generateImageLinks("teapot", i), desc, volume);
+    }
+
+    private Rod generateRandomRod(int i) {
+        String[] names = {"Cần Daiwa", "Cần Shimano", "Cần Abu"};
+        String name = names[rand.nextInt(names.length)];
+        String material = "Carbon";
+        String desc = "Cần câu siêu bền.";
+        double length = randDouble(2, 5);
+
+        return new Rod("R" + i, name, "Cần câu", material,
+                randDouble(80, 200), randDouble(300, 900), length,
+                generateRandomAuthors(), randInt(2018, 2024),
+                generateRandomAwards(), generateImageLinks("rod", i), desc);
+    }
+
+    private List<String> generateRandomAuthors() {
+        String[] authors = {"Barfilon", "Daiwa", "YuFeng", "Shimano"};
+        int count = rand.nextInt(2) + 1;
+        List<String> list = new ArrayList<>();
+        while (list.size() < count) {
+            String author = authors[rand.nextInt(authors.length)];
+            if (!list.contains(author)) list.add(author);
+        }
+        return list;
+    }
+
+    private List<String> generateRandomAwards() {
+        String[] awards = {"CCTV", "Top 10 Châu Á", "Hoa Gia", "Giải tỉnh"};
+        List<String> list = new ArrayList<>();
+        list.add(awards[rand.nextInt(awards.length)]);
+        return list;
+    }
+
+    private List<String> generateImageLinks(String prefix, int i) {
+        List<String> images = new ArrayList<>();
+        images.add("https://img.com/" + prefix + i + "_1.jpg");
+        images.add("https://img.com/" + prefix + i + "_2.jpg");
+        return images;
+    }
+
+    private double randDouble(double min, double max) {
+        return Math.round((min + (max - min) * rand.nextDouble()) * 10.0) / 10.0;
+    }
+
+    private int randInt(int min, int max) {
+        return rand.nextInt(max - min + 1) + min;
+    }
+}
