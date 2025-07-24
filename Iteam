@@ -1,0 +1,96 @@
+import java.io.Serializable;
+import java.util.List;
+import java.util.Scanner;
+
+public abstract class Item implements Serializable {
+    protected String id;
+    protected String name;
+    protected String category;
+    protected String material;
+    protected double inPrice;
+    protected double price;
+    protected List<String> authorIds;
+    protected int yearOfRelease;
+    protected List<String> awards;
+    protected List<String> images;
+    protected String desc;
+
+    public Item() {}
+
+    public Item(String id, String name, String category, String material, double inPrice, double price,
+                List<String> authorIds, int yearOfRelease, List<String> awards,
+                List<String> images, String desc) {
+        this.id = id;
+        this.name = name;
+        this.category = category;
+        this.material = material;
+        this.inPrice = inPrice;
+        this.price = price;
+        this.authorIds = authorIds;
+        this.yearOfRelease = yearOfRelease;
+        this.awards = awards;
+        this.images = images;
+        this.desc = desc;
+    }
+
+    // Abstract methods
+    public abstract void input(Scanner sc, ItemList list);
+    public abstract void output();
+
+    // Getter methods for displayTable
+    public String getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public String getMaterial() {
+        return material;
+    }
+
+    public double getInPrice() {
+        return inPrice;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public List<String> getAuthorIds() {
+        return authorIds;
+    }
+
+    public int getYearOfRelease() {
+        return yearOfRelease;
+    }
+
+    public List<String> getAwards() {
+        return awards;
+    }
+
+    public List<String> getImages() {
+        return images;
+    }
+
+    public String getDesc() {
+        return desc;
+    }
+
+    // Utility method to input a list of strings
+    protected List<String> inputList(Scanner sc, String label) {
+        System.out.print("Nhập số lượng " + label + ": ");
+        int count = Integer.parseInt(sc.nextLine());
+        List<String> list = new java.util.ArrayList<>();
+        for (int i = 1; i <= count; i++) {
+            System.out.print(label + " #" + i + ": ");
+            list.add(sc.nextLine());
+        }
+        return list;
+    }
+}
