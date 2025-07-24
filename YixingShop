@@ -1,0 +1,55 @@
+import java.util.Scanner;
+
+public class YixingShop {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        ItemList list = new ItemList();
+        int choice;
+
+        do {
+            System.out.println("====== YIXING SHOP MENU ======");
+            System.out.println("1. Nhập mới 1 ấm trà");
+            System.out.println("2. Nhập mới 1 cần câu");
+            System.out.println("3. Hiển thị tất cả sản phẩm");
+            System.out.println("4. Sắp xếp theo giá giảm dần");
+            System.out.println("5. Sắp xếp theo tên A-Z");
+            System.out.println("6. Cập nhật sản phẩm theo mã");
+            System.out.println("7. Đọc dữ liệu từ file");
+            System.out.println("8. Ghi dữ liệu ra file");
+            System.out.println("9. Tìm ấm trà theo thể tích");
+            System.out.println("10. Tìm cần câu theo chiều dài");
+            System.out.println("11. Tìm theo tên nghệ nhân hoặc nhà máy");
+            System.out.println("0. Thoát");
+            System.out.print("Chọn: ");
+            choice = Integer.parseInt(sc.nextLine());
+
+            switch (choice) {
+                case 1: list.addItem(new TeaPot(), sc); break;
+                case 2: list.addItem(new Rod(), sc); break;
+                case 3: list.displayTable(); break;
+                case 4: list.sortItemsByPrice(); list.displayTable(); break;
+                case 5: list.sortItemsByName(); list.displayTable(); break;
+                case 6:
+                    System.out.print("Nhập mã sản phẩm cần cập nhật: ");
+                    list.updateItemById(sc.nextLine(), sc);
+                    break;
+                case 7: list.loadDataFromFile("items.dat"); break;
+                case 8: list.saveDataToFile("items.dat"); break;
+                case 9:
+                    System.out.print("Nhập thể tích cần tìm (ml): ");
+                    list.searchTeaPotByVolume(Double.parseDouble(sc.nextLine()));
+                    break;
+                case 10:
+                    System.out.print("Nhập chiều dài cần tìm (m): ");
+                    list.searchRodByLength(Double.parseDouble(sc.nextLine()));
+                    break;
+                case 11:
+                    System.out.print("Nhập tên nghệ nhân hoặc nhà máy: ");
+                    list.searchByAuthor(sc.nextLine());
+                    break;
+                case 0: System.out.println("Tạm biệt!"); break;
+                default: System.out.println("❌ Lựa chọn không hợp lệ.");
+            }
+        } while (choice != 0);
+    }
+}
